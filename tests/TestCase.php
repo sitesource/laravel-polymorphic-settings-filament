@@ -5,6 +5,7 @@ namespace SiteSource\PolymorphicSettings\Filament\Tests;
 use Filament\FilamentServiceProvider;
 use Filament\Forms\FormsServiceProvider;
 use Filament\Notifications\NotificationsServiceProvider;
+use Filament\Schemas\SchemasServiceProvider;
 use Filament\Support\SupportServiceProvider;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\File;
@@ -18,9 +19,19 @@ class TestCase extends Orchestra
 {
     protected function getPackageProviders($app)
     {
-        return [
+        $providers = [
             LivewireServiceProvider::class,
             SupportServiceProvider::class,
+        ];
+
+        // SchemasServiceProvider only exists from Filament 4 onward —
+        // v3 keeps schema/form bits inside FormsServiceProvider.
+        if (class_exists(SchemasServiceProvider::class)) {
+            $providers[] = SchemasServiceProvider::class;
+        }
+
+        return [
+            ...$providers,
             FormsServiceProvider::class,
             NotificationsServiceProvider::class,
             FilamentServiceProvider::class,

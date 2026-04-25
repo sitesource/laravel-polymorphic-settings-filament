@@ -2,9 +2,6 @@
 
 namespace SiteSource\PolymorphicSettings\Filament\Pages;
 
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +10,7 @@ use SiteSource\PolymorphicSettings\Filament\Internal\FormIntrospector;
 use SiteSource\PolymorphicSettings\SettingsStore;
 
 /**
- * @property Form $form
+ * @property object $form Filament container — Form (v3) or Schema (v4+).
  *
  * Base class for Filament pages that read and write settings through
  * sitesource/laravel-polymorphic-settings.
@@ -22,35 +19,40 @@ use SiteSource\PolymorphicSettings\SettingsStore;
  * load and save-time persist for you, including auto-encrypting any
  * `TextInput` field marked with `->password()`.
  *
- * Example:
+ * The form parameter type follows your installed Filament version:
  *
- *     use Filament\Forms\Components\TextInput;
- *     use Filament\Forms\Components\Toggle;
- *     use Filament\Forms\Form;
- *     use SiteSource\PolymorphicSettings\Filament\Pages\PolymorphicSettingsPage;
+ * Filament 3.x — `Filament\Forms\Form`:
  *
- *     class CommerceSettings extends PolymorphicSettingsPage
+ *     public function form(Form $form): Form
  *     {
- *         protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
- *         protected static string $view = 'filament.pages.commerce-settings';
- *
- *         public function form(Form $form): Form
- *         {
- *             return $form->schema([
- *                 Toggle::make('commerce.stripe.enabled'),
- *                 TextInput::make('commerce.stripe.public_key'),
- *                 TextInput::make('commerce.stripe.secret_key')->password(),
- *             ])->statePath('data');
- *         }
+ *         return $form->schema([
+ *             Toggle::make('commerce.stripe.enabled'),
+ *             TextInput::make('commerce.stripe.public_key'),
+ *             TextInput::make('commerce.stripe.secret_key')->password(),
+ *         ])->statePath('data');
  *     }
+ *
+ * Filament 4 / 5 — `Filament\Schemas\Schema`:
+ *
+ *     public function form(Schema $schema): Schema
+ *     {
+ *         return $schema->components([
+ *             Toggle::make('commerce.stripe.enabled'),
+ *             TextInput::make('commerce.stripe.public_key'),
+ *             TextInput::make('commerce.stripe.secret_key')->password(),
+ *         ])->statePath('data');
+ *     }
+ *
+ * Field component imports (TextInput, Toggle, Select, etc.) live at
+ * `Filament\Forms\Components\*` in every supported version. Layout
+ * components like Section moved namespaces between 3 and 4 — check
+ * Filament's upgrade guide if you use them.
  *
  * Override `scopeFor()` to bind the page to a specific model — e.g. to
  * edit the current team's settings rather than the global ones.
  */
-abstract class PolymorphicSettingsPage extends Page implements HasForms
+abstract class PolymorphicSettingsPage extends Page
 {
-    use InteractsWithForms;
-
     /** @var array<string, mixed> */
     public ?array $data = [];
 

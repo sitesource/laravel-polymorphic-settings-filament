@@ -9,7 +9,7 @@ A base [Filament](https://filamentphp.com) page class and helper trait that auto
 ```php
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
+use Filament\Schemas\Schema;
 use SiteSource\PolymorphicSettings\Filament\Pages\PolymorphicSettingsPage;
 
 class CommerceSettings extends PolymorphicSettingsPage
@@ -17,9 +17,9 @@ class CommerceSettings extends PolymorphicSettingsPage
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
     protected static string $view = 'filament.pages.commerce-settings';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             Toggle::make('commerce.stripe.enabled'),
             TextInput::make('commerce.stripe.public_key'),
             TextInput::make('commerce.stripe.secret_key')->password(),  // auto-encrypts
@@ -42,7 +42,7 @@ You'll also need the core package installed and migrated:
 php artisan polymorphic-settings:install
 ```
 
-Filament 3.x is required. Filament 4.x support will land in a 0.2 release once Filament 4 is stable.
+Filament **4.x or 5.x** is required. (Filament 3.x is supported by the v0.1.x line of this package.)
 
 ## Usage
 
@@ -53,9 +53,9 @@ The default scope is global — settings live alongside `PolymorphicSettings::gl
 ```php
 class GeneralSettings extends PolymorphicSettingsPage
 {
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             TextInput::make('site_title'),
             TextInput::make('contact_email'),
         ])->statePath('data');
@@ -70,9 +70,9 @@ Override `scopeFor()` to return the model whose settings you're editing:
 ```php
 class TeamSettings extends PolymorphicSettingsPage
 {
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form->schema([
+        return $schema->components([
             TextInput::make('theme.primary_color'),
             TextInput::make('theme.logo_url'),
         ])->statePath('data');
